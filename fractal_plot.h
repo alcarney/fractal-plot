@@ -1,5 +1,5 @@
-#ifndef NEWTON_METHOD_C
-#define NEWTON_METHOD_C
+#ifndef FRACTAL_PLOT_C
+#define FRACTAL_PLOT_C
 
 #include <stdio.h>
 #include <stdlib.h>
