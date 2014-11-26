@@ -8,11 +8,8 @@ WARN= -Wall -Wextra -Werror
 
 .PHONY: clean
 
-fractal_plot: newtons_method.o
-	gcc $(WARN) newtons_method.o fractal_plot.c  -o fractal_plot
-
-newtons_method.o:
-	gcc -c $(WARN) newtons_method.c -o newtons_method.o
+fractal_plot:
+	gcc $(WARN) fractal_plot.c  -o fractal_plot
 
 clean:
 	rm *.o
