@@ -2,12 +2,32 @@
 #include <stdlib.h>
 #include <math.h>
 #include <complex.h>
+#include <png.h>
 
 #include <pnghelper/png_writer.h>
 #include <pnghelper/pixel_ops.h>
 
 
 #include "fractal_plot.h"
+
+// Data Structures
+typedef struct fractal_params
+{
+    double start;
+    double end;
+    double step;
+
+    ComplexFunc f;
+    ComplexFunc f_dash;
+} FractalParams;
+
+// Function Prototypes
+
+double complex derivative(double complex z);
+double complex func(double complex z);
+double complex newton_method(double complex x_0, ComplexFunc f, ComplexFunc f_dash, unsigned int n);
+int test_root(double complex z);
+void generate_fractal(Pixel pixel, unsigned int x, unsigned int y, void* params);
 
 // ---------------------------- Fractal Plotter Functions --------------------------------------
 
@@ -80,6 +100,40 @@ int test_root(double complex z)
     return closest;
 }
 
+/*
+ * This function will get passed to the pixel iterator and will compute the
+ * color of the pixel at that point.
+ */
+void generate_fractal(Pixel pixel, unsigned int x, unsigned int y, void* params)
+{
+    FractalParams* p = (FractalParams*) params;
+
+    double complex z = (p->start + p->step*x) + (p->start + p->step*y) * I;
+    z = newton_method(z, p->f, p->f_dash, 5);
+    int root = test_root(z);
+
+    switch(root)
+    {
+        case 0:
+            pixel[0] = 255;
+            pixel[1] = 0;
+            pixel[2] = 0;
+            break;
+
+        case 1:
+            pixel[0] = 0;
+            pixel[1] = 255;
+            pixel[2] = 0;
+            break;
+
+        case 2:
+            pixel[0] = 0;
+            pixel[1] = 0;
+            pixel[2] = 255;
+            break;
+    }
+}
+
 // ---------------------------- Mathematical Functions -----------------------------------------------
 
 double complex func(double complex z)
@@ -96,46 +150,46 @@ double complex derivative(double complex z)
 
 int main()
 {
+    // Create a parameters struct for the fractal
+    FractalParams frac_params = {
+            .start  =  -1.0,
+            .end    =   1.0,
+            .f      =   func,
+            .f_dash =  derivative
+    };
 
-    ComplexFunc f = func;
-    ComplexFunc f_dash = derivative;
+    // Create and initialise a new png image
+    PNGImage img;
+    IMGParams img_params;
 
-    double x_start = -1.0;
-    double x_step = 0.1;
-    double x_end = 1.0;
-    double x;
-    int x_i = 0;
+    img_params.width = 512;
+    img_params.height = 512;
+    img_params.color_type = PNG_COLOR_TYPE_RGB;
 
-    double y_start = 1.0;
-    double y_step = -0.1;
-    double y_end = -1.0;
-    double y;
-    int y_i = 0;
-
-
-    // Loop for each row
-    for (y = y_start; y > y_end; y_i++)
+    if(!(new_png_image(&img, &img_params)))
     {
-        y = y_start + y_i*y_step;
-
-        // Loop for each column
-        for(x = x_start; x < x_end; x_i++)
-        {
-
-            x = x_start + x_i*x_step;
-
-            // Create a complex number representing this point
-            double complex z = x + y * I;
-
-            // Perform newton's method on this point
-            z = newton_method(z, f, f_dash, 5);
-            int root = test_root(z);
-            printf("%i", root);
-        }
-        x = x_start;
-        x_i = 0;
-        printf("\n");
+        fprintf(stderr, "Unable to create image for the fractal\n");
+        return 1;
     }
+
+    // Now we have our image calculate the step for each pixel
+    frac_params.step = (frac_params.end - frac_params.start) / img_params.width;
+
+    // Set our pixel iterator function
+    PixelIterator iter = generate_fractal;
+
+    // Run the pixel iterator
+    png_pixel_iterate(&img, iter, (void*)&frac_params);
+
+    // Save the image file
+    if(!(write_png_to_file(&img, "fractal.png")))
+    {
+        fprintf(stderr, "Unable to save png image\n");
+        destroy_png_image(&img);
+        return 1;
+    }
+
+    destroy_png_image(&img);
 
     return 0;
 }
