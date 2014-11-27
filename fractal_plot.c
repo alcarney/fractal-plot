@@ -3,6 +3,10 @@
 #include <math.h>
 #include <complex.h>
 
+#include <pnghelper/png_writer.h>
+#include <pnghelper/pixel_ops.h>
+
+
 #include "fractal_plot.h"
 
 // ---------------------------- Fractal Plotter Functions --------------------------------------

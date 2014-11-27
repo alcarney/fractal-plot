@@ -1,7 +1,7 @@
 WARN= -Wall -Wextra -Werror
 
-#HEAD_PATH=/home/alex/.myheaders
-#LIB_PATH=/home/alex/.mylibs
+HEAD_PATH=/home/alex/.myheaders
+LIB_PATH=/home/alex/.mylibs
 
 #HEADERS=
 #LIB_COMPONENTS=
@@ -9,7 +9,7 @@ WARN= -Wall -Wextra -Werror
 .PHONY: clean
 
 fractal_plot:
-	gcc $(WARN) fractal_plot.c  -o fractal_plot -lm
+	gcc -I$(HEAD_PATH) -L$(LIB_PATH) $(WARN) fractal_plot.c  -o fractal_plot -lm -lpnghelper
 
 clean:
 	rm *.o
