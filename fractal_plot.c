@@ -96,12 +96,42 @@ int main()
     ComplexFunc f = func;
     ComplexFunc f_dash = derivative;
 
-    double complex z = -10.0 + 10.0 * I;
-    double complex x = newton_method(z, f, f_dash, 10);
+    double x_start = -1.0;
+    double x_step = 0.1;
+    double x_end = 1.0;
+    double x;
+    int x_i = 0;
 
-    printf("The value of x is %.2f + %.2fi\n", crealf(x), cimagf(x));
-    printf("X is closest to the root %i\n", test_root(x));
+    double y_start = 1.0;
+    double y_step = -0.1;
+    double y_end = -1.0;
+    double y;
+    int y_i = 0;
 
+
+    // Loop for each row
+    for (y = y_start; y > y_end; y_i++)
+    {
+        y = y_start + y_i*y_step;
+
+        // Loop for each column
+        for(x = x_start; x < x_end; x_i++)
+        {
+
+            x = x_start + x_i*x_step;
+
+            // Create a complex number representing this point
+            double complex z = x + y * I;
+
+            // Perform newton's method on this point
+            z = newton_method(z, f, f_dash, 5);
+            int root = test_root(z);
+            printf("%i", root);
+        }
+        x = x_start;
+        x_i = 0;
+        printf("\n");
+    }
 
     return 0;
 }
