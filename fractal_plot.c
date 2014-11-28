@@ -162,8 +162,8 @@ int main()
     PNGImage img;
     IMGParams img_params;
 
-    img_params.width = 512;
-    img_params.height = 512;
+    img_params.width = 4096;
+    img_params.height = 4096;
     img_params.color_type = PNG_COLOR_TYPE_RGB;
 
     if(!(new_png_image(&img, &img_params)))
