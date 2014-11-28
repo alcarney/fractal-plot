@@ -228,21 +228,21 @@ void generate_fractal(Pixel pixel, unsigned int x, unsigned int y, void* params)
     switch(root)
     {
         case 0:
-            pixel[0] = 255/num_iterations;
-            pixel[1] = 0;
-            pixel[2] = 0;
+            pixel[0] = 255 - 5 * num_iterations;
+            pixel[1] = 255;
+            pixel[2] = 255;
             break;
 
         case 1:
-            pixel[0] = 0;
-            pixel[1] = 255/num_iterations;
-            pixel[2] = 0;
+            pixel[0] = 255;
+            pixel[1] = 255 - 5 * num_iterations;
+            pixel[2] = 255;
             break;
 
         case 2:
-            pixel[0] = 0;
-            pixel[1] = 0;
-            pixel[2] = 255/num_iterations;
+            pixel[0] = 255;
+            pixel[1] = 255;
+            pixel[2] = 255 - 5 * num_iterations;
             break;
     }
 }
